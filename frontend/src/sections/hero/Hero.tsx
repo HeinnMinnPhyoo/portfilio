@@ -72,7 +72,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="mt-10 flex items-center justify-center gap-5"
+            className="mt-16 flex items-center justify-center gap-5"
           >
             <SocialLink href={SITE.github} label="GitHub">
               <FaGithub size={20} />

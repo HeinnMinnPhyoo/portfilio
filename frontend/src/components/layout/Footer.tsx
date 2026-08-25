@@ -1,4 +1,4 @@
-import { Heart, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 
 import Container from "@/src/components/ui/Container";
@@ -43,14 +43,9 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-slate-800/60 pt-8 sm:flex-row">
+        <div className="mt-10 border-t border-slate-800/60 pt-8 text-center">
           <p className="text-sm text-slate-500">
             &copy; {year} {SITE.name}. All rights reserved.
-          </p>
-          <p className="flex items-center gap-1 text-sm text-slate-500">
-            Built with
-            <Heart size={14} className="text-red-400" />
-            using Next.js & Tailwind CSS
           </p>
         </div>
       </Container>

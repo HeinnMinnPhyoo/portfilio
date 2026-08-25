@@ -12,12 +12,49 @@ import { cn } from "@/src/lib/cn";
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeHref, setActiveHref] = useState<string>(NAV_ITEMS[0].href);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    const sectionIds = NAV_ITEMS.map((item) => item.href.slice(1));
+    const elements = sectionIds
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => Boolean(el));
+
+    if (elements.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+        if (visible[0]?.target.id) {
+          setActiveHref(`#${visible[0].target.id}`);
+        }
+      },
+      {
+        rootMargin: "-40% 0px -50% 0px",
+        threshold: [0, 0.25, 0.5, 0.75, 1],
+      }
+    );
+
+    elements.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
+  const linkClass = (href: string) =>
+    cn(
+      "inline-flex items-center justify-center rounded-xl px-6 py-3 text-sm transition",
+      activeHref === href
+        ? "bg-blue-600 text-white hover:bg-blue-500"
+        : "text-slate-400 hover:bg-slate-800/50 hover:text-white"
+    );
 
   return (
     <header
@@ -33,12 +70,13 @@ export default function Navbar() {
           <Logo size="md" />
         </a>
 
-        <nav className="hidden items-center gap-3 md:flex">
+        <nav className="hidden items-center gap-8 md:flex">
           {NAV_ITEMS.map((item) => (
             <a
               key={item.href}
               href={item.href}
-              className="rounded-lg px-3 py-2 text-sm text-slate-400 transition hover:bg-slate-800/50 hover:text-white"
+              className={linkClass(item.href)}
+              onClick={() => setActiveHref(item.href)}
             >
               {item.title}
             </a>
@@ -47,7 +85,7 @@ export default function Navbar() {
             href={SITE.resumeUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="ml-4 rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-blue-500"
+            className="ml-2 rounded-xl border border-blue-500/60 px-5 py-2.5 text-sm font-medium text-blue-400 transition hover:border-blue-400 hover:bg-blue-600/10 hover:text-blue-300"
           >
             Resume
           </a>
@@ -70,8 +108,16 @@ export default function Navbar() {
               <a
                 key={item.href}
                 href={item.href}
-                className="rounded-lg px-4 py-3 text-slate-300 transition hover:bg-slate-800/50"
-                onClick={() => setMobileOpen(false)}
+                className={cn(
+                  "rounded-lg px-4 py-3 transition",
+                  activeHref === item.href
+                    ? "bg-blue-600 text-white"
+                    : "text-slate-300 hover:bg-slate-800/50"
+                )}
+                onClick={() => {
+                  setActiveHref(item.href);
+                  setMobileOpen(false);
+                }}
               >
                 {item.title}
               </a>
@@ -80,7 +126,7 @@ export default function Navbar() {
               href={SITE.resumeUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-2 rounded-xl bg-blue-600 px-4 py-3 text-center font-medium text-white"
+              className="mt-2 rounded-xl border border-blue-500/60 px-4 py-3 text-center font-medium text-blue-400"
               onClick={() => setMobileOpen(false)}
             >
               Download Resume
